@@ -88,7 +88,7 @@ class ModuleSocialmedia extends \Module
                 $objTemplate = new \FrontendTemplate($strCustomTemplate);
                 $objTemplate->setData($objItems->row());
 
-                self::generateImage($objItems, $objTemplate);
+                self::generateElementImage($objItems, $objTemplate);
 
                 $objTemplate->url       = $strUrl;
                 $objTemplate->parameter = $strParameter;
@@ -125,7 +125,7 @@ class ModuleSocialmedia extends \Module
      * @param null $objTemplate
      * @return string|void
      */
-    public static function generateImage($objData=null, $objTemplate=null)
+    public static function generateElementImage($objData=null, $objTemplate=null)
     {
 
         if ($objData->addImage === '') return;
