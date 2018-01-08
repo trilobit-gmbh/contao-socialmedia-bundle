@@ -1,0 +1,5 @@
+trilobit:
+    socialmedia:
+        target:
+            popup: window.open(this.href, '', 'width=640,height=380,modal=yes,left=100,top=50,location=no,menubar=no,resizable=yes,scrollbars=yes,status=no,toolbar=no'); return false;
+            window: window.open(this.href, '', ''); return false;
