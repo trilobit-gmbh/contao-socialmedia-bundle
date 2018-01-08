@@ -16,6 +16,12 @@ $GLOBALS['FE_MOD']['navigationMenu']['socialmedia'] = 'Trilobit\SocialmediaBundl
 
 
 /**
+ * Back end form fields
+ */
+$GLOBALS['BE_FFL']['socialmediaParameterOptionWizard'] = 'Trilobit\SocialmediaBundle\ParameterOptionWizard';
+
+
+/**
  * Back end module
  */
 $GLOBALS['BE_MOD']['trilobit']['socialmedia'] = array

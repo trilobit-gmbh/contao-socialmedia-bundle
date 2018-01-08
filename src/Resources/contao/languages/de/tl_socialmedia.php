@@ -18,7 +18,7 @@ $GLOBALS['TL_LANG']['tl_socialmedia']['image_legend']   = 'Bild-Einstellungen';
 // actions
 $GLOBALS['TL_LANG']['tl_socialmedia']['new'][0]            = 'Neue Kategorie';
 $GLOBALS['TL_LANG']['tl_socialmedia']['new'][1]            = 'Neue Kategorie hinzufügen.';
-$GLOBALS['TL_LANG']['tl_socialmedia']['edit'][0]           = 'Kategorie-Einstellungen bearbeiten.';
+$GLOBALS['TL_LANG']['tl_socialmedia']['edit'][0]           = 'Kategorie-Einstellungen bearbeiten';
 $GLOBALS['TL_LANG']['tl_socialmedia']['edit'][1]           = 'Die Kategorie bearbeiten.';
 $GLOBALS['TL_LANG']['tl_socialmedia']['editheader'][0]     = 'Kategorie-Einstellungen bearbeiten';
 $GLOBALS['TL_LANG']['tl_socialmedia']['editheader'][1]     = 'Die Kategorie-Einstellungen bearbeiten.';
@@ -41,4 +41,4 @@ $GLOBALS['TL_LANG']['tl_socialmedia']['published'][1] = 'Das Social Media Katego
 $GLOBALS['TL_LANG']['tl_socialmedia']['start'][0]     = 'Anzeigen ab';
 $GLOBALS['TL_LANG']['tl_socialmedia']['start'][1]     = 'Das Social Media Kategorie erst ab diesem Tag auf der Webseite anzeigen.';
 $GLOBALS['TL_LANG']['tl_socialmedia']['stop'][0]      = 'Anzeigen bis';
-$GLOBALS['TL_LANG']['tl_socialmedia']['stop'][1]      = 'Das Social Media Kategorie nur bis zu diesem Tag auf der Webseite anzeigen';
+$GLOBALS['TL_LANG']['tl_socialmedia']['stop'][1]      = 'Das Social Media Kategorie nur bis zu diesem Tag auf der Webseite anzeigen.';
