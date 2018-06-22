@@ -268,7 +268,7 @@ $GLOBALS['TL_DCA']['tl_socialmedia_elements'] = array
             'label'                 => &$GLOBALS['TL_LANG']['tl_socialmedia_elements']['parameter'],
             'exclude'               => true,
             'inputType'             => 'socialmediaParameterOptionWizard',
-            'eval'                    => array('tl_class'=>'clr w50'),
+            'eval'                  => array('tl_class'=>'clr long'),
             'sql'                   => "blob NULL",
         ),
         'cssID' => array
