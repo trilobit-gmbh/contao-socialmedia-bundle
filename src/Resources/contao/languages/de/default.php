@@ -1,14 +1,10 @@
 <?php
 
-/**
- * Contao Open Source CMS
- *
- * Copyright (C) 2005-2014 Leo Feyer
- *
- * @package   trilobit
- * @author    Peter Adelmann
- * @license   LPGL
- * @copyright trilobit GmbH <http://www.trilobit.de>
+/*
+ * @copyright  trilobit GmbH
+ * @author     trilobit GmbH <https://github.com/trilobit-gmbh>
+ * @license    LGPL-3.0-or-later
+ * @link       http://github.com/trilobit-gmbh/contao-socialmedia-bundle
  */
 
 // MOD
