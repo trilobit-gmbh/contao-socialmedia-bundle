@@ -10,6 +10,7 @@
 // legends
 $GLOBALS['TL_LANG']['tl_socialmedia']['title_legend'] = 'Titel';
 $GLOBALS['TL_LANG']['tl_socialmedia']['image_legend'] = 'Bild-Einstellungen';
+$GLOBALS['TL_LANG']['tl_socialmedia']['publish_legend'] = 'Veröffentlichung';
 
 // actions
 $GLOBALS['TL_LANG']['tl_socialmedia']['new'][0] = 'Neue Kategorie';
