@@ -8,5 +8,5 @@
  */
 
 // MOD
-$GLOBALS['TL_LANG']['MOD']['socialmedia'][0] = 'Linki społecznościowe';
-$GLOBALS['TL_LANG']['MOD']['socialmedia'][1] = 'Dodaj linki do mediów społecznościowych';
+$GLOBALS['TL_LANG']['MOD']['socialmedia'][0] = 'Media społecznościowe';
+$GLOBALS['TL_LANG']['MOD']['socialmedia'][1] = 'Dodaj odnośniki do mediów społecznościowych';

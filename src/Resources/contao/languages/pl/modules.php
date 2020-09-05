@@ -7,8 +7,8 @@
  * @link       http://github.com/trilobit-gmbh/contao-socialmedia-bundle
  */
 
-$GLOBALS['TL_LANG']['MOD']['socialmedia'][0] = 'Linki społecznościowe';
-$GLOBALS['TL_LANG']['MOD']['socialmedia'][1] = 'Dodaj linki do mediów społecznościowych (np. udostępnij na Facebook, Twitter, poleć na Google+)';
+$GLOBALS['TL_LANG']['MOD']['socialmedia'][0] = 'Media społecznościowe';
+$GLOBALS['TL_LANG']['MOD']['socialmedia'][1] = 'Dodaj odnośniki do mediów społecznościowych (np. udostępnij na Facebook, Twitter, poleć na Google+)';
 
 // FMD
 $GLOBALS['TL_LANG']['FMD']['socialmedia'][0] = $GLOBALS['TL_LANG']['MOD']['socialmedia'][0];
