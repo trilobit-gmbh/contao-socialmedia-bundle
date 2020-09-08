@@ -32,7 +32,7 @@ $GLOBALS['TL_LANG']['tl_socialmedia']['show'][1] = 'Show category ID %s.';
 
 // fields
 $GLOBALS['TL_LANG']['tl_socialmedia']['title'][0] = 'Title';
-$GLOBALS['TL_LANG']['tl_socialmedia']['title'][1] = 'Please a title for this social media category.';
+$GLOBALS['TL_LANG']['tl_socialmedia']['title'][1] = 'Please add a title for this social media category.';
 $GLOBALS['TL_LANG']['tl_socialmedia']['published'][0] = 'Publish social media category';
 $GLOBALS['TL_LANG']['tl_socialmedia']['published'][1] = 'Display social media category on website.';
 $GLOBALS['TL_LANG']['tl_socialmedia']['start'][0] = 'Show from';
