@@ -1,7 +1,7 @@
 {
   "name": "trilobit-gmbh/contao-socialmedia-bundle",
   "type": "contao-bundle",
-  "description": "Contao 4 socialmedia bundle",
+  "description": "Contao 4 / Contao 5 socialmedia bundle",
   "license": "LGPL-3.0-or-later",
   "authors": [
     {
