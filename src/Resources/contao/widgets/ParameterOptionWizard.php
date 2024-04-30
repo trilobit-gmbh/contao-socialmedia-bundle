@@ -1,18 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * @copyright  trilobit GmbH
  * @author     trilobit GmbH <https://github.com/trilobit-gmbh>
  * @license    LGPL-3.0-or-later
- * @link       http://github.com/trilobit-gmbh/contao-socialmedia-bundle
  */
 
 namespace Trilobit\SocialmediaBundle;
 
+use Contao\Image;
+use Contao\StringUtil;
+use Contao\Widget;
+
 /**
  * Class ParameterOptionWizard.
  */
-class ParameterOptionWizard extends \Widget
+class ParameterOptionWizard extends Widget
 {
     /**
      * Submit user input.
@@ -82,7 +87,7 @@ class ParameterOptionWizard extends \Widget
         $arrButtons = ['copy', 'delete', 'drag'];
 
         // Make sure there is at least an empty array
-        if (!\is_array($this->varValue) || !$this->varValue[0]) {
+        if (!\is_array($this->varValue) || !isset($this->varValue[0])) {
             $this->varValue = [['']];
         }
 
@@ -101,8 +106,8 @@ class ParameterOptionWizard extends \Widget
         for ($i = 0, $c = \count($this->varValue); $i < $c; ++$i) {
             $return .= '
     <tr>
-      <td><input type="text" name="'.$this->strId.'['.$i.'][value]" id="'.$this->strId.'_value_'.$i.'" class="tl_text" value="'.\StringUtil::specialchars($this->varValue[$i]['value']).'"></td>
-      <td><input type="text" name="'.$this->strId.'['.$i.'][label]" id="'.$this->strId.'_label_'.$i.'" class="tl_text" value="'.\StringUtil::specialchars($this->varValue[$i]['label']).'"></td>';
+      <td><input type="text" name="'.$this->strId.'['.$i.'][value]" id="'.$this->strId.'_value_'.$i.'" class="tl_text" value="'.StringUtil::specialchars($this->varValue[$i]['value'] ?? '').'"></td>
+      <td><input type="text" name="'.$this->strId.'['.$i.'][label]" id="'.$this->strId.'_label_'.$i.'" class="tl_text" value="'.StringUtil::specialchars($this->varValue[$i]['label'] ?? '').'"></td>';
 
             // Add row buttons
             $return .= '
@@ -110,9 +115,9 @@ class ParameterOptionWizard extends \Widget
 
             foreach ($arrButtons as $button) {
                 if ('drag' === $button) {
-                    $return .= ' <button type="button" class="drag-handle" title="'.\StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['move']).'">'.\Image::getHtml('drag.svg').'</button>';
+                    $return .= ' <button type="button" class="drag-handle" title="'.StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['move']).'">'.Image::getHtml('drag.svg').'</button>';
                 } else {
-                    $return .= ' <button type="button" data-command="'.$button.'" title="'.\StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['ow_'.$button]).'">'.\Image::getHtml($button.'.svg').'</button>';
+                    $return .= ' <button type="button" data-command="'.$button.'" title="'.StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['ow_'.$button]).'">'.Image::getHtml($button.'.svg').'</button>';
                 }
             }
 

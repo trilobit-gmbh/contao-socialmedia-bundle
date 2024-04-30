@@ -1,15 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * @copyright  trilobit GmbH
  * @author     trilobit GmbH <https://github.com/trilobit-gmbh>
  * @license    LGPL-3.0-or-later
- * @link       http://github.com/trilobit-gmbh/contao-socialmedia-bundle
  */
 
-/**
+/*
  * Load language file(s).
  */
+
+use Contao\BackendUser;
+use Contao\Controller;
+use Contao\DC_Table;
+use Contao\System;
+
 System::loadLanguageFile('tl_content');
 Controller::loadDataContainer('tl_content');
 Controller::loadDataContainer('tl_article');
@@ -20,7 +27,7 @@ Controller::loadDataContainer('tl_article');
 $GLOBALS['TL_DCA']['tl_socialmedia_elements'] = [
     // Config
     'config' => [
-        'dataContainer' => 'Table',
+        'dataContainer' => DC_Table::class,
         'ptable' => 'tl_socialmedia',
         'enableVersioning' => true,
         'sql' => [
@@ -38,7 +45,7 @@ $GLOBALS['TL_DCA']['tl_socialmedia_elements'] = [
             'fields' => ['sorting'],
             'panelLayout' => 'filter;sort,search,limit',
             'headerFields' => ['title'],
-            'child_record_callback' => ['tl_socialmedia_elements', 'listElements'],
+            'child_record_callback' => [Trilobit\SocialmediaBundle\Helper::class, 'listElements'],
         ],
         'label' => [
             'fields' => ['title', 'type'],
@@ -67,7 +74,7 @@ $GLOBALS['TL_DCA']['tl_socialmedia_elements'] = [
                 'label' => &$GLOBALS['TL_LANG']['tl_socialmedia_elements']['delete'],
                 'href' => 'act=delete',
                 'icon' => 'delete.gif',
-                'attributes' => 'onclick="if (!confirm(\''.$GLOBALS['TL_LANG']['MSC']['deleteConfirm'].'\')) return false; Backend.getScrollOffset();"',
+                'attributes' => 'onclick="if (!confirm(\''.(isset($GLOBALS['TL_LANG']['MSC']['deleteConfirm']) ? $GLOBALS['TL_LANG']['MSC']['deleteConfirm'] : '').'\')) return false; Backend.getScrollOffset();"',
             ],
             'toggle' => [
                 'label' => &$GLOBALS['TL_LANG']['tl_socialmedia_elements']['toggle'],
@@ -102,7 +109,7 @@ $GLOBALS['TL_DCA']['tl_socialmedia_elements'] = [
 
     // Subpalettes
     'subpalettes' => [
-        'addImage' => 'singleSRC,size,imagemargin,overwriteMeta',
+        'addImage' => 'singleSRC,size,overwriteMeta',
         'overwriteMeta' => 'alt,imageTitle,caption',
     ],
 
@@ -132,22 +139,22 @@ $GLOBALS['TL_DCA']['tl_socialmedia_elements'] = [
             'sql' => "char(1) NOT NULL default ''",
         ],
         'size' => [
-            'label' => &$GLOBALS['TL_LANG']['tl_content']['size'],
-            'exclude' => true,
+            'label' => &$GLOBALS['TL_LANG']['MSC']['imgSize'],
             'inputType' => 'imageSize',
-            'options' => $GLOBALS['TL_CROP'],
             'reference' => &$GLOBALS['TL_LANG']['MSC'],
-            'eval' => ['rgxp' => 'digit', 'nospace' => true, 'helpwizard' => true, 'tl_class' => 'w50'],
-            'sql' => "varchar(64) NOT NULL default ''",
+            'eval' => ['rgxp' => 'natural', 'includeBlankOption' => true, 'nospace' => true, 'helpwizard' => true, 'tl_class' => 'w50 clr'],
+            'options_callback' => static function() {
+                return System::getContainer()->get('contao.image.sizes')->getOptionsForUser(BackendUser::getInstance());
+
+                return System::getContainer()->get('contao.image.image_sizes')->getOptionsForUser(BackendUser::getInstance());
+            },
+            'sql' => "varchar(128) COLLATE ascii_bin NOT NULL default ''",
         ],
         'singleSRC' => [
             'label' => &$GLOBALS['TL_LANG']['tl_content']['singleSRC'],
             'exclude' => true,
             'inputType' => 'fileTree',
             'eval' => ['filesOnly' => true, 'fieldType' => 'radio', 'mandatory' => true, 'tl_class' => 'clr'],
-            'load_callback' => [
-                ['tl_content', 'setSingleSrcFlags'],
-            ],
             'sql' => 'binary(16) NULL',
         ],
         'alt' => [
@@ -166,25 +173,6 @@ $GLOBALS['TL_DCA']['tl_socialmedia_elements'] = [
             'eval' => ['maxlength' => 255, 'tl_class' => 'w50'],
             'sql' => "varchar(255) NOT NULL default ''",
         ],
-        'size' => [
-            'label' => &$GLOBALS['TL_LANG']['tl_content']['size'],
-            'exclude' => true,
-            'inputType' => 'imageSize',
-            'reference' => &$GLOBALS['TL_LANG']['MSC'],
-            'eval' => ['rgxp' => 'natural', 'includeBlankOption' => true, 'nospace' => true, 'helpwizard' => true, 'tl_class' => 'w50'],
-            'options_callback' => function () {
-                return System::getContainer()->get('contao.image.image_sizes')->getOptionsForUser(BackendUser::getInstance());
-            },
-            'sql' => "varchar(64) NOT NULL default ''",
-        ],
-        'imagemargin' => [
-            'label' => &$GLOBALS['TL_LANG']['tl_content']['imagemargin'],
-            'exclude' => true,
-            'inputType' => 'trbl',
-            'options' => $GLOBALS['TL_CSS_UNITS'],
-            'eval' => ['includeBlankOption' => true, 'tl_class' => 'w50'],
-            'sql' => "varchar(128) NOT NULL default ''",
-        ],
         'caption' => [
             'label' => &$GLOBALS['TL_LANG']['tl_content']['caption'],
             'exclude' => true,
@@ -199,7 +187,6 @@ $GLOBALS['TL_DCA']['tl_socialmedia_elements'] = [
             'search' => true,
             'inputType' => 'text',
             'eval' => ['mandatory' => true, 'rgxp' => 'url', 'decodeEntities' => true, 'maxlength' => 255, 'fieldType' => 'radio'],
-            'eval' => ['mandatory' => true, 'rgxp' => 'url', 'decodeEntities' => true, 'maxlength' => 255, 'dcaPicker' => true, 'tl_class' => 'w50 wizard'],
             'sql' => "varchar(255) NOT NULL default ''",
         ],
         'target' => [
@@ -208,7 +195,7 @@ $GLOBALS['TL_DCA']['tl_socialmedia_elements'] = [
             'search' => true,
             'filter' => true,
             'inputType' => 'select',
-            'options_callback' => ['tl_socialmedia_elements', 'getTargetOptions'],
+            'options_callback' => [Trilobit\SocialmediaBundle\Helper::class, 'getTargetOptions'],
             'reference' => &$GLOBALS['TL_LANG']['tl_socialmedia_elements']['options']['target'],
             'eval' => ['chosen' => true, 'includeBlankOption' => true, 'tl_class' => 'w50'],
             'sql' => "varchar(32) NOT NULL default ''",
@@ -288,40 +275,3 @@ $GLOBALS['TL_DCA']['tl_socialmedia_elements'] = [
         ],
     ],
 ];
-
-/**
- * Class tl_cascadingcontent_category.
- *
- * Provide miscellaneous methods that are used by the data configuration array.
- */
-class tl_socialmedia_elements extends Backend
-{
-    /**
-     * __construct.
-     */
-    public function __construct()
-    {
-        parent::__construct();
-        $this->import('BackendUser', 'User');
-    }
-
-    /**
-     * generateAlias.
-     */
-    public function getTargetOptions()
-    {
-        return array_keys(\Trilobit\SocialmediaBundle\Helper::getConfigData()['target']);
-    }
-
-    /**
-     * listElements.
-     *
-     * @param mixed $arrRow
-     */
-    public function listElements($arrRow)
-    {
-        return $arrRow['title'];
-
-        return $arrRow['title'].' <span style="color:#b3b3b3;padding-left:3px">['.$GLOBALS['TL_LANG']['tl_socialmedia_elements']['options']['target'][$arrRow['target']].']</span>';
-    }
-}

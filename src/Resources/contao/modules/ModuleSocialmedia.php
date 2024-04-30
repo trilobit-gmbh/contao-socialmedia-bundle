@@ -1,22 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * @copyright  trilobit GmbH
  * @author     trilobit GmbH <https://github.com/trilobit-gmbh>
  * @license    LGPL-3.0-or-later
- * @link       http://github.com/trilobit-gmbh/contao-socialmedia-bundle
  */
 
 namespace Trilobit\SocialmediaBundle;
 
-use Contao\Controller;
-use Patchwork\Utf8;
-use StringUtil;
+use Contao\BackendTemplate;
+use Contao\ContentModel;
+use Contao\CoreBundle\File\Metadata;
+use Contao\FilesModel;
+use Contao\FrontendTemplate;
+use Contao\Module;
+use Contao\StringUtil;
+use Contao\System;
 
 /**
  * Class ModuleSocialmedia.
  */
-class ModuleSocialmedia extends \Module
+class ModuleSocialmedia extends Module
 {
     /**
      * @var string
@@ -28,11 +34,11 @@ class ModuleSocialmedia extends \Module
      */
     public function generate()
     {
-        if (TL_MODE === 'BE') {
-            /** @var BackendTemplate|object $objTemplate */
-            $objTemplate = new \BackendTemplate('be_wildcard');
+        $request = System::getContainer()->get('request_stack')->getCurrentRequest();
 
-            $objTemplate->wildcard = '### '.Utf8::strtoupper($GLOBALS['TL_LANG']['MOD']['socialmedia'][0]).' ###';
+        if ($request && System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest($request)) {
+            $objTemplate = new BackendTemplate('be_wildcard');
+            $objTemplate->wildcard = '### '.strtoupper($GLOBALS['TL_LANG']['MOD']['socialmedia'][0]).' ###';
             $objTemplate->title = $this->headline;
             $objTemplate->id = $this->id;
             $objTemplate->link = $this->name;
@@ -50,23 +56,53 @@ class ModuleSocialmedia extends \Module
      *
      * @return string|void
      */
-    public static function generateElementImage($objData = null, $objTemplate = null)
+    protected function generateElementImage($objData = null, $objTemplate = null)
     {
         if ('' === $objData->addImage) {
             return;
         }
+
         if ('' === $objData->singleSRC) {
             return;
         }
-        $objFile = \FilesModel::findByUuid($objData->singleSRC);
 
-        if (null === $objFile || !is_file(TL_ROOT.'/'.$objFile->path)) {
+        $objModel = FilesModel::findByUuid($objData->singleSRC);
+
+        $rootDir = System::getContainer()->getParameter('kernel.project_dir');
+        if (null === $objModel || !is_file($rootDir.'/'.$objModel->path)) {
             return '';
         }
 
-        $objData->singleSRC = $objFile->path;
+        $rowData = $objData->row();
 
-        Controller::addImageToTemplate($objTemplate, $objData->row(), null, null, $objFile);
+        $createMetadataOverwriteFromRowData = static function(bool $interpretAsContentModel) use ($rowData) {
+            if ($interpretAsContentModel) {
+                // This will be null if "overwriteMeta" is not set
+                return (new ContentModel())->setRow($rowData)->getOverwriteMetadata();
+            }
+
+            // Manually create metadata that always contains certain properties (BC)
+            return new Metadata([
+                Metadata::VALUE_ALT => $rowData['alt'] ?? '',
+                Metadata::VALUE_TITLE => $rowData['imageTitle'] ?? '',
+                Metadata::VALUE_URL => System::getContainer()->get('contao.insert_tag.parser')->replaceInline($rowData['imageUrl'] ?? ''),
+                'linkTitle' => (string) ($rowData['linkTitle'] ?? ''),
+            ]);
+        };
+
+        $figureBuilder = System::getContainer()->get('contao.image.studio')->createFigureBuilder();
+
+        $figureBuilder
+            ->fromFilesModel($objModel)
+            ->setMetadata($createMetadataOverwriteFromRowData(true))
+        ;
+
+        $figure = $figureBuilder
+            ->setSize($objData->size)
+            ->enableLightbox((bool) ($rowData['fullsize'] ?? false))
+            ->buildIfResourceExists()
+        ;
+        $figure->applyLegacyTemplateData($objTemplate, [], $rowData['floating'] ?? null, false);
     }
 
     protected function compile()
@@ -85,31 +121,33 @@ class ModuleSocialmedia extends \Module
 
             while ($objItems->next()) {
                 $strUrl = $objItems->url;
-                $strParameter = self::generateParameter(deserialize($objItems->parameter, true));
+                $strParameter = $this->generateParameter(StringUtil::deserialize($objItems->parameter, true));
 
                 if ('mailto:' === substr($strUrl, 0, 7)) {
                     $strUrl = StringUtil::encodeEmail($strUrl);
                 } else {
-                    $strUrl = ampersand($strUrl);
+                    $strUrl = StringUtil::ampersand($strUrl);
                 }
 
                 $embed = explode('%s', $objItems->embed);
 
-                $objTemplate = new \FrontendTemplate($strCustomTemplate);
+                $objTemplate = new FrontendTemplate($strCustomTemplate);
                 $objTemplate->setData($objItems->row());
 
-                self::generateElementImage($objItems, $objTemplate);
+                $this->generateElementImage($objItems, $objTemplate);
+
+                $data = StringUtil::deserialize($objItems->cssID, true);
 
                 $objTemplate->url = $strUrl;
                 $objTemplate->parameter = $strParameter;
-
                 $objTemplate->title = $objItems->title;
-
                 $objTemplate->href = $strUrl.$strParameter;
-                $objTemplate->embed_pre = $embed[0];
-                $objTemplate->embed_post = $embed[1];
+                $objTemplate->embed_pre = $embed[0] ?? '';
+                $objTemplate->embed_post = $embed[1] ?? '';
                 $objTemplate->link = ('' !== $objItems->linkTitle && null !== $objItems->linkTitle ? $objItems->linkTitle : $objItems->title);
                 $objTemplate->target = '';
+                $objTemplate->class = trim($strCustomTemplate.' '.($data[1] ?? ''));
+                $objTemplate->cssID = !empty($data[0]) ? ' id="'.$data[0].'"' : '';
 
                 if ($objItems->titleText) {
                     $objTemplate->linkTitle = StringUtil::specialchars($objItems->titleText);
@@ -128,11 +166,9 @@ class ModuleSocialmedia extends \Module
     }
 
     /**
-     * @param array $arrData
-     *
      * @return string
      */
-    protected function generateParameter($arrData = [])
+    protected function generateParameter(array $arrData = [])
     {
         if (empty($arrData)) {
             return '';
