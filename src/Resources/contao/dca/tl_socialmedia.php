@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * @copyright  trilobit GmbH
  * @author     trilobit GmbH <https://github.com/trilobit-gmbh>
  * @license    LGPL-3.0-or-later
- * @link       http://github.com/trilobit-gmbh/contao-socialmedia-bundle
  */
+
+use Contao\DC_Table;
+use Contao\System;
 
 System::loadLanguageFile('tl_article');
 
@@ -15,7 +19,7 @@ System::loadLanguageFile('tl_article');
 $GLOBALS['TL_DCA']['tl_socialmedia'] = [
     // Config
     'config' => [
-        'dataContainer' => 'Table',
+        'dataContainer' => DC_Table::class,
         'ctable' => ['tl_socialmedia_elements'],
         'enableVersioning' => true,
         'switchToEdit' => true,
@@ -72,7 +76,7 @@ $GLOBALS['TL_DCA']['tl_socialmedia'] = [
                 'label' => &$GLOBALS['TL_LANG']['tl_socialmedia']['delete'],
                 'href' => 'act=delete',
                 'icon' => 'delete.gif',
-                'attributes' => 'onclick="if (!confirm(\''.$GLOBALS['TL_LANG']['MSC']['deleteConfirm'].'\')) return false; Backend.getScrollOffset();"',
+                'attributes' => 'onclick="if (!confirm(\''.(isset($GLOBALS['TL_LANG']['MSC']['deleteConfirm']) ? $GLOBALS['TL_LANG']['MSC']['deleteConfirm'] : '').'\')) return false; Backend.getScrollOffset();"',
             ],
             'toggle' => [
                 'label' => &$GLOBALS['TL_LANG']['tl_socialmedia']['toggle'],
@@ -162,18 +166,3 @@ $GLOBALS['TL_DCA']['tl_socialmedia'] = [
         ],
     ],
 ];
-
-/**
- * Class tl_socialmedia.
- */
-class tl_socialmedia extends Backend
-{
-    /**
-     * tl_socialmedia constructor.
-     */
-    public function __construct()
-    {
-        parent::__construct();
-        $this->import('BackendUser', 'User');
-    }
-}

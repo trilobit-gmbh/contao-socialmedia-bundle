@@ -1,20 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * @copyright  trilobit GmbH
  * @author     trilobit GmbH <https://github.com/trilobit-gmbh>
  * @license    LGPL-3.0-or-later
- * @link       http://github.com/trilobit-gmbh/contao-socialmedia-bundle
  */
 
 namespace Trilobit\SocialmediaBundle;
 
+use Contao\Backend;
 use Symfony\Component\Yaml\Yaml;
 
 /**
  * Class Helper.
  */
-class Helper
+class Helper extends Backend
 {
     /**
      * @return string
@@ -24,13 +26,53 @@ class Helper
         return \dirname(__DIR__);
     }
 
-    /**
-     * @return mixed
-     */
     public static function getConfigData()
     {
         $strYml = file_get_contents(self::getVendowDir().'/../config/config.yml');
 
-        return Yaml::parse($strYml)['trilobit']['socialmedia'];
+        return Yaml::parse($strYml)['trilobit_socialmedia']['socialmedia'];
+    }
+
+    public function getModuleTemplates()
+    {
+        return $this->getTemplateGroup('socialmedia_');
+    }
+
+    /**
+     * @return array
+     */
+    public function getModuleCategories()
+    {
+        $arrItems = [];
+        $objItems = $this->Database->execute('SELECT id, title FROM tl_socialmedia ORDER BY title');
+
+        while ($objItems->next()) {
+            $arrItems[$objItems->id] = $objItems->title;
+        }
+
+        return $arrItems;
+    }
+
+    public function getTargetOptions()
+    {
+        return array_keys(self::getConfigData()['target']);
+    }
+
+    /**
+     * listElements.
+     */
+    public function listElements(mixed $arrRow)
+    {
+        // return $arrRow['title'];
+
+        return $arrRow['title']
+            .' <span style="color:#b3b3b3;padding-left:3px">'
+            .'['
+            .(isset($arrRow['target'])
+                ? ($GLOBALS['TL_LANG']['tl_socialmedia_elements']['options']['target'][$arrRow['target']] ?? '')
+                : ''
+            )
+            .']'
+            .'</span>';
     }
 }
