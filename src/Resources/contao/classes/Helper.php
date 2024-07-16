@@ -61,18 +61,14 @@ class Helper extends Backend
     /**
      * listElements.
      */
-    public function listElements(mixed $arrRow)
+    public function listElements(array $arrRow)
     {
-        // return $arrRow['title'];
-
         return $arrRow['title']
-            .' <span style="color:#b3b3b3;padding-left:3px">'
-            .'['
-            .(isset($arrRow['target'])
-                ? ($GLOBALS['TL_LANG']['tl_socialmedia_elements']['options']['target'][$arrRow['target']] ?? '')
+            .(isset($arrRow['target']) && !empty($arrRow['target'])
+                ? ' <span style="color:#b3b3b3;padding-left:3px">['
+                .($GLOBALS['TL_LANG']['tl_socialmedia_elements']['options']['target'][$arrRow['target']] ?? '')
+                .']</span>'
                 : ''
-            )
-            .']'
-            .'</span>';
+            );
     }
 }
