@@ -182,10 +182,12 @@ class ModuleSocialmedia extends Module
                 $strData .= '&amp;';
             }
 
-            $strData .= $value['value'].'='.$value['label'];
+            if (\array_key_exists('value', $value) && \array_key_exists('label', $value)) {
+                $strData .= $value['value'].'='.$value['label'];
+            }
         }
 
-        if ('?=' === $strData) {
+        if ('?=' || '?' === $strData) {
             return '';
         }
 
