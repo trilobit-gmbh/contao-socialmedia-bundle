@@ -120,13 +120,13 @@ class ModuleSocialmedia extends Module
             $strItems = '';
 
             while ($objItems->next()) {
-                $strUrl = $objItems->url;
-                $strParameter = $this->generateParameter(StringUtil::deserialize($objItems->parameter, true));
+                $url = $objItems->url;
+                $parameter = $this->generateParameter(StringUtil::deserialize($objItems->parameter, true));
 
-                if ('mailto:' === substr($strUrl, 0, 7)) {
-                    $strUrl = StringUtil::encodeEmail($strUrl);
+                if ('mailto:' === substr($url, 0, 7)) {
+                    $url = StringUtil::encodeEmail($url);
                 } else {
-                    $strUrl = StringUtil::ampersand($strUrl);
+                    $url = StringUtil::ampersand($url);
                 }
 
                 $embed = explode('%s', $objItems->embed);
@@ -138,10 +138,10 @@ class ModuleSocialmedia extends Module
 
                 $data = StringUtil::deserialize($objItems->cssID, true);
 
-                $objTemplate->url = $strUrl;
-                $objTemplate->parameter = $strParameter;
+                $objTemplate->url = $url;
+                $objTemplate->parameter = $parameter;
                 $objTemplate->title = $objItems->title;
-                $objTemplate->href = $strUrl.$strParameter;
+                $objTemplate->href = $url.$parameter;
                 $objTemplate->embed_pre = $embed[0] ?? '';
                 $objTemplate->embed_post = $embed[1] ?? '';
                 $objTemplate->link = ('' !== $objItems->linkTitle && null !== $objItems->linkTitle ? $objItems->linkTitle : $objItems->title);
@@ -168,29 +168,24 @@ class ModuleSocialmedia extends Module
     /**
      * @return string
      */
-    protected function generateParameter(array $arrData = [])
+    protected function generateParameter(array $parameter = [])
     {
-        if (empty($arrData)) {
+        if (empty($parameter)) {
             return '';
         }
-        $strData = '';
 
-        foreach ($arrData as $value) {
-            if ('' === $strData) {
-                $strData = '?';
-            } else {
-                $strData .= '&amp;';
-            }
+        $data = [];
 
+        foreach ($parameter as $value) {
             if (\array_key_exists('value', $value) && \array_key_exists('label', $value)) {
-                $strData .= $value['value'].'='.$value['label'];
+                $data[] = $value['value'].'='.$value['label'];
             }
         }
 
-        if ('?=' || '?' === $strData) {
-            return '';
+        if (!empty($data)) {
+            return '?'.implode('&', $data);
         }
 
-        return $strData;
+        return '';
     }
 }

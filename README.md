@@ -39,5 +39,6 @@ Install the extension via composer: [trilobit-gmbh/contao-socialmedia-bundle](ht
 Compatibility
 =============
 
-* Contao version ~4.4
-* Contao version ~4.9
+* Contao version ~4.13
+* Contao version ~5.3
+* Contao version ~5.7
